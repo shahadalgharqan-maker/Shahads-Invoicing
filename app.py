@@ -21,14 +21,21 @@ def increment_embed_count():
     return count
 
 def show_admin_if_requested():
-    # Only show if URL has ?admin=1
-    qp = st.query_params
-    admin_flag = str(qp.get("admin", "")) == "1"
-    if not admin_flag:
+    # Works across Streamlit versions: admin can be "1" or ["1"]
+    try:
+        admin_val = st.query_params.get("admin", "")
+    except Exception:
+        admin_val = st.experimental_get_query_params().get("admin", "")
+
+    if isinstance(admin_val, list):
+        admin_val = admin_val[0] if admin_val else ""
+
+    if str(admin_val) != "1":
         return
 
     st.divider()
     st.subheader("Admin")
+
     pw = st.text_input("Password", type="password")
     if not pw:
         st.info("Enter password to view totals.")
@@ -36,6 +43,8 @@ def show_admin_if_requested():
     if pw != st.secrets.get("ADMIN_PASSWORD", ""):
         st.error("Wrong password.")
         return
+
+    st.success(f"📊 Total embeddings processed: {get_embed_count()}")
 
     st.success(f"📊 Total embeddings processed: {get_embed_count()}")
 
@@ -138,7 +147,8 @@ if st.button("Embed XML into PDF", use_container_width=True):
 
         with st.spinner("Embedding XML..."):
             new_pdf = embed_xml_bytes_in_pdf(pdf_file.read(), xml_file.name, xml_file.read())
-            increment_embed_count()
+            
+        increment_embed_count()
 
         st.success("✅ Done! The XML was embedded as an attachment.")
         st.download_button(
