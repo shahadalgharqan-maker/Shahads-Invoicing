@@ -49,11 +49,29 @@ div.stButton > button {
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<div class="company-header">
-  <div></div>
-  <div class="company-name">Shahad's Invoicing Company Ltd.</div>
+<div style='
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 5px;
+'>
+    <h1 style='
+        font-size: 42px;
+        font-weight: 700;
+        margin-bottom: 0px;
+        color: #1F2937;
+        letter-spacing: 0.5px;
+    '>
+        Shahad's Invoicing
+    </h1>
+    <p style='
+        font-size: 15px;
+        color: #6B7280;
+        margin-top: 4px;
+    '>
+        Professional Invoice XML Embedding Service
+    </p>
 </div>
-<div class="top-divider"></div>
+<hr style='margin-top:20px; margin-bottom:30px; border:1px solid #E5E7EB;'>
 """, unsafe_allow_html=True)
 
 st.markdown("# Embed XML into PDF")
