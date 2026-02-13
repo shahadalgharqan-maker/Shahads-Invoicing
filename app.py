@@ -138,6 +138,7 @@ if st.button("Embed XML into PDF", use_container_width=True):
 
         with st.spinner("Embedding XML..."):
             new_pdf = embed_xml_bytes_in_pdf(pdf_file.read(), xml_file.name, xml_file.read())
+            increment_embed_count()
 
         st.success("✅ Done! The XML was embedded as an attachment.")
         st.download_button(
@@ -154,3 +155,5 @@ st.markdown("""
   For inquiries, please contact sh_6895@hotmail.com
 </div>
 """, unsafe_allow_html=True)
+
+show_admin_if_requested()
