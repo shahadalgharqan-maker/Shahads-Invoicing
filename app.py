@@ -2,6 +2,8 @@
 import fitz
 import streamlit as st
 
+st.header("Shahad's Invoicing")
+
 st.set_page_config(
     page_title="PDF XML Embedder",
     page_icon="📎",
