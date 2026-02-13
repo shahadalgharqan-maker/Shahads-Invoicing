@@ -2,7 +2,7 @@
 import fitz
 import streamlit as st
 
-st.header("Shahad's Invoicing")
+
 
 st.set_page_config(
     page_title="PDF XML Embedder",
@@ -68,7 +68,7 @@ st.markdown("""
         color: #6B7280;
         margin-top: 4px;
     '>
-        Professional Invoice XML Embedding Service
+        Professional Invoicing Service
     </p>
 </div>
 <hr style='margin-top:20px; margin-bottom:30px; border:1px solid #E5E7EB;'>
