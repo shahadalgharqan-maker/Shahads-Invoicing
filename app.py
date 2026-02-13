@@ -2,7 +2,42 @@
 import fitz
 import streamlit as st
 
+import os
+from urllib.parse import parse_qs
 
+COUNTER_FILE = "embed_counter.txt"
+
+def get_embed_count():
+    if not os.path.exists(COUNTER_FILE):
+        with open(COUNTER_FILE, "w") as f:
+            f.write("0")
+    with open(COUNTER_FILE, "r") as f:
+        return int(f.read().strip() or "0")
+
+def increment_embed_count():
+    count = get_embed_count() + 1
+    with open(COUNTER_FILE, "w") as f:
+        f.write(str(count))
+    return count
+
+def show_admin_if_requested():
+    # Only show if URL has ?admin=1
+    qp = st.query_params
+    admin_flag = str(qp.get("admin", "")) == "1"
+    if not admin_flag:
+        return
+
+    st.divider()
+    st.subheader("Admin")
+    pw = st.text_input("Password", type="password")
+    if not pw:
+        st.info("Enter password to view totals.")
+        return
+    if pw != st.secrets.get("ADMIN_PASSWORD", ""):
+        st.error("Wrong password.")
+        return
+
+    st.success(f"📊 Total embeddings processed: {get_embed_count()}")
 
 st.set_page_config(
     page_title="PDF XML Embedder",
