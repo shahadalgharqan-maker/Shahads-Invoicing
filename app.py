@@ -2,52 +2,6 @@ import os
 import fitz
 import streamlit as st
 
-# -----------------------------
-# Language Dictionary
-# -----------------------------
-translations = {
-    "English": {
-        "upload_pdf": "1) Upload PDF",
-        "upload_xml": "2) Upload XML",
-        "output_name": "Output file name",
-        "button": "Embed XML into PDF",
-        "success": "✅ Done! The XML was embedded as an attachment.",
-        "download": "⬇ Download embedded PDF",
-        "missing": "Please upload both a PDF and an XML file.",
-
-    },
-    "العربية": {
-        "upload_pdf": "PDF ارفع ملف",
-        "upload_xml": "XML ارفع ملف",
-        "output_name": "اختر اسم الملف الجديد",
-        "button": "إتمام العملية",
-        "success": "✅ داخل الفاتورة بنجاح XML تم إدخال ملف",
-        "download": "⬇ تحميل الملف الجديد",
-        "missing": "معاً PDF وملف XML يرجى رفع ملف",
-
-    }
-}
-
-# -----------------------------
-# Sidebar Language Selector
-# -----------------------------
-lang = st.sidebar.selectbox("🌍 Language / اللغة", ["English", "العربية"])
-T = translations[lang]
-
-# RTL Support for Arabic
-if lang == "العربية":
-    st.markdown(
-        """
-        <style>
-        body, html, * {
-            direction: rtl;
-            text-align: right;
-            font-family: "Tahoma", sans-serif;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
 
 COUNTER_FILE = "embed_counter.txt"
 
