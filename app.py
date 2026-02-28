@@ -4,7 +4,7 @@ import streamlit as st
 
 
 # -----------------------------
-# Language Dictionary (YOUR TEXT – unchanged)
+# Language Dictionary (UNCHANGED)
 # -----------------------------
 translations = {
     "English": {
@@ -33,6 +33,20 @@ translations = {
 lang = st.sidebar.selectbox("🌍 Language / اللغة", ["English", "العربية"])
 T = translations[lang]
 
+# -----------------------------
+# Helper: Only Arabic Text Right-Aligned
+# -----------------------------
+def label(key):
+    text = T[key]
+    if lang == "العربية":
+        return f"<div dir='rtl' style='text-align: right;'>{text}</div>"
+    return text
+
+def message(text):
+    if lang == "العربية":
+        st.markdown(f"<div dir='rtl' style='text-align:right;'>{text}</div>", unsafe_allow_html=True)
+    else:
+        st.write(text)
 
 COUNTER_FILE = "embed_counter.txt"
 
@@ -120,15 +134,15 @@ st.caption("Attach an XML file to a PDF invoice and download the updated PDF.")
 st.divider()
 
 # -----------------------------
-# Upload Section (TRANSLATED)
+# Upload Section
 # -----------------------------
 col1, col2 = st.columns(2)
 with col1:
-    pdf_file = st.file_uploader(T["upload_pdf"], type=["pdf"], key="pdf_up")
+    pdf_file = st.file_uploader(label("upload_pdf"), type=["pdf"], key="pdf_up")
 with col2:
-    xml_file = st.file_uploader(T["upload_xml"], type=["xml"], key="xml_up")
+    xml_file = st.file_uploader(label("upload_xml"), type=["xml"], key="xml_up")
 
-output_name = st.text_input(T["output_name"], "output.pdf", key="out_name")
+output_name = st.text_input(label("output_name"), "output.pdf", key="out_name")
 
 def embed_xml_bytes_in_pdf(pdf_bytes: bytes, xml_name: str, xml_bytes: bytes) -> bytes:
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
@@ -138,11 +152,13 @@ def embed_xml_bytes_in_pdf(pdf_bytes: bytes, xml_name: str, xml_bytes: bytes) ->
     return out
 
 # -----------------------------
-# Embed Button (TRANSLATED)
+# Embed Button
 # -----------------------------
 if st.button(T["button"], use_container_width=True, key="embed_btn"):
+
     if not pdf_file or not xml_file:
-        st.error(T["missing"])
+        message(T["missing"])
+
     else:
         name = output_name.strip() or "output.pdf"
         if not name.lower().endswith(".pdf"):
@@ -153,7 +169,8 @@ if st.button(T["button"], use_container_width=True, key="embed_btn"):
 
         increment_embed_count()
 
-        st.success(T["success"])
+        message(T["success"])
+
         st.download_button(
             T["download"],
             data=new_pdf,
