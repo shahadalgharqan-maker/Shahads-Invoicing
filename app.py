@@ -2,7 +2,6 @@ import os
 import fitz
 import streamlit as st
 
-
 # -----------------------------
 # Language Dictionary (UNCHANGED)
 # -----------------------------
@@ -28,26 +27,23 @@ translations = {
 }
 
 # -----------------------------
+# Page Config
+# -----------------------------
+st.set_page_config(
+    page_title="PDF XML Embedder",
+    page_icon="📎",
+    layout="wide"
+)
+
+# -----------------------------
 # Sidebar Language Selector
 # -----------------------------
 lang = st.sidebar.selectbox("🌍 Language / اللغة", ["English", "العربية"])
 T = translations[lang]
 
 # -----------------------------
-# Helper: Only Arabic Text Right-Aligned
+# Counter System
 # -----------------------------
-def label(key):
-    text = T[key]
-    if lang == "العربية":
-        return f"<div dir='rtl' style='text-align: right;'>{text}</div>"
-    return text
-
-def message(text):
-    if lang == "العربية":
-        st.markdown(f"<div dir='rtl' style='text-align:right;'>{text}</div>", unsafe_allow_html=True)
-    else:
-        st.write(text)
-
 COUNTER_FILE = "embed_counter.txt"
 
 def get_embed_count():
@@ -63,6 +59,9 @@ def increment_embed_count():
         f.write(str(count))
     return count
 
+# -----------------------------
+# Admin View
+# -----------------------------
 def show_admin_if_requested():
     try:
         admin_val = st.query_params.get("admin", "")
@@ -79,21 +78,20 @@ def show_admin_if_requested():
     st.subheader("Admin")
 
     pw = st.text_input("Password", type="password", key="admin_pw")
+
     if not pw:
         st.info("Enter password to view totals.")
         return
+
     if pw != st.secrets.get("ADMIN_PASSWORD", ""):
         st.error("Wrong password.")
         return
 
     st.success(f"📊 Total embeddings processed: {get_embed_count()}")
 
-st.set_page_config(
-    page_title="PDF XML Embedder",
-    page_icon="📎",
-    layout="wide"
-)
-
+# -----------------------------
+# Styling
+# -----------------------------
 st.markdown("""
 <style>
 .block-container { padding-top: 1.5rem; max-width: 1100px; }
@@ -137,13 +135,31 @@ st.divider()
 # Upload Section
 # -----------------------------
 col1, col2 = st.columns(2)
+
 with col1:
-    pdf_file = st.file_uploader(label("upload_pdf"), type=["pdf"], key="pdf_up")
+    if lang == "العربية":
+        st.markdown(f"<div dir='rtl' style='text-align:right'>{T['upload_pdf']}</div>", unsafe_allow_html=True)
+        pdf_file = st.file_uploader("", type=["pdf"], key="pdf_up")
+    else:
+        pdf_file = st.file_uploader(T["upload_pdf"], type=["pdf"], key="pdf_up")
+
 with col2:
-    xml_file = st.file_uploader(label("upload_xml"), type=["xml"], key="xml_up")
+    if lang == "العربية":
+        st.markdown(f"<div dir='rtl' style='text-align:right'>{T['upload_xml']}</div>", unsafe_allow_html=True)
+        xml_file = st.file_uploader("", type=["xml"], key="xml_up")
+    else:
+        xml_file = st.file_uploader(T["upload_xml"], type=["xml"], key="xml_up")
 
-output_name = st.text_input(label("output_name"), "output.pdf", key="out_name")
+# Output name
+if lang == "العربية":
+    st.markdown(f"<div dir='rtl' style='text-align:right'>{T['output_name']}</div>", unsafe_allow_html=True)
+    output_name = st.text_input("", "output.pdf", key="out_name")
+else:
+    output_name = st.text_input(T["output_name"], "output.pdf", key="out_name")
 
+# -----------------------------
+# Embed Function
+# -----------------------------
 def embed_xml_bytes_in_pdf(pdf_bytes: bytes, xml_name: str, xml_bytes: bytes) -> bytes:
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     doc.embfile_add(xml_name, xml_bytes)
@@ -152,12 +168,15 @@ def embed_xml_bytes_in_pdf(pdf_bytes: bytes, xml_name: str, xml_bytes: bytes) ->
     return out
 
 # -----------------------------
-# Embed Button
+# Button
 # -----------------------------
 if st.button(T["button"], use_container_width=True, key="embed_btn"):
 
     if not pdf_file or not xml_file:
-        message(T["missing"])
+        if lang == "العربية":
+            st.markdown(f"<div dir='rtl' style='text-align:right'>{T['missing']}</div>", unsafe_allow_html=True)
+        else:
+            st.error(T["missing"])
 
     else:
         name = output_name.strip() or "output.pdf"
@@ -165,11 +184,18 @@ if st.button(T["button"], use_container_width=True, key="embed_btn"):
             name += ".pdf"
 
         with st.spinner("Embedding XML..."):
-            new_pdf = embed_xml_bytes_in_pdf(pdf_file.read(), xml_file.name, xml_file.read())
+            new_pdf = embed_xml_bytes_in_pdf(
+                pdf_file.read(),
+                xml_file.name,
+                xml_file.read()
+            )
 
         increment_embed_count()
 
-        message(T["success"])
+        if lang == "العربية":
+            st.markdown(f"<div dir='rtl' style='text-align:right'>{T['success']}</div>", unsafe_allow_html=True)
+        else:
+            st.success(T["success"])
 
         st.download_button(
             T["download"],
@@ -181,7 +207,7 @@ if st.button(T["button"], use_container_width=True, key="embed_btn"):
         )
 
 # -----------------------------
-# Footer (UNCHANGED)
+# Footer
 # -----------------------------
 st.markdown("""
 <div class="footer">
